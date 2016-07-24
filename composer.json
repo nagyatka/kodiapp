@@ -1,7 +1,21 @@
 {
+    "name": "nagyatka/kodiapp",
+    "type": "library",
+    "description": "PHP Application framework",
+    "keywords": ["framework","php"],
+    "license": "Apache-2.0",
+    "homepage": "https://github.com/nagyatka/kodiapp",
+    "authors": [
+        {
+            "name": "Attila Nagy",
+            "email": "anagy@hit.bme.hu",
+            "role": "Author, Developer"
+        }
+    ],
     "require": {
         "pimple/pimple": "^3.0",
         "nikic/fast-route": "v1.0.1",
-        "nagyatka/pandabase": "v0.9.6"
+        "nagyatka/pandabase": "v0.9.6",
+        "twig/twig": "~1.0"
     }
 }
