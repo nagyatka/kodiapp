@@ -12,6 +12,11 @@
             "role": "Author, Developer"
         }
     ],
+    "autoload": {
+        "psr-0": {
+            "KodiApp": "src/kodiapp"
+        }
+    },
     "require": {
         "pimple/pimple": "^3.0",
         "nikic/fast-route": "v1.0.1",
