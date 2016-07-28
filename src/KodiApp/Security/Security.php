@@ -113,7 +113,7 @@ class Security
     private function isValidPassword(UserInterface $user) {
         $salt = substr($user->getHashedPassword(), 0, 64); // 64 karakter a salt, másik 64 a hash hex-ben
         $hash = $this->hashPassword($user->getRawPassword(), $salt);
-        if ($hash->output == $user->getRawPassword()) return true;
+        if ($hash->output == $user->getHashedPassword()) return true;
         else return false;
     }
 
