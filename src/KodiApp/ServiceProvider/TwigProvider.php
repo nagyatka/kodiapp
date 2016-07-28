@@ -9,7 +9,8 @@
 namespace KodiApp\ServiceProvider;
 
 
-use Model\Core\Twig\Twig;
+
+use KodiApp\Twig\Twig;
 use Pimple\Container;
 use Pimple\ServiceProviderInterface;
 

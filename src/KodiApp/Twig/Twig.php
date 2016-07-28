@@ -6,7 +6,7 @@
  * Time: 17:55
  */
 
-namespace Model\Core\Twig;
+namespace KodiApp\Twig;
 
 
 use KodiApp\Application;

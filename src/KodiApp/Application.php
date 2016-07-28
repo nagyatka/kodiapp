@@ -18,7 +18,7 @@ use KodiApp\Response\ErrorResponse;
 use KodiApp\Router\RouterInterface;
 use KodiApp\Security\Security;
 use KodiApp\Session\SessionStorage;
-use Model\Core\Twig\Twig;
+use KodiApp\Twig\Twig;
 use Monolog\Logger;
 use Pimple\Container;
 
@@ -119,7 +119,7 @@ class Application
 
             //Jogosultság ellenőrzése, ha van definiálva security
             $security = $this->getSecurity();
-            if ($security != null && $security->checkPermissions($uri)) {
+            if ($security != null && !$security->checkPermissions($uri)) {
                 throw new HttpAccessDeniedException();
             }
 
@@ -145,7 +145,8 @@ class Application
             return;
 
         } catch (HttpException $e) {
-            print $this->{$this->callableErrorHandler}($e);
+            $handler = $this->callableErrorHandler;
+            print $handler($e);
         } catch (\Exception $e) {
             print "Unhandled exception!\n";
             if(Application::isDevelopmentEnv()) print $e->getMessage();
@@ -253,7 +254,7 @@ class Application
     }
 
     private function loadController($controllerName) {
-        $class_path = $this->environment["controller_path"]."/".$controllerName;
+        $class_path = $this->environment["controllers_path"]."/".$controllerName.".php";
         if (file_exists($class_path)) {
             include $class_path;
             return true;
