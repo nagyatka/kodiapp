@@ -14,6 +14,7 @@ use KodiApp\Exception\HttpAccessDeniedException;
 use KodiApp\Exception\HttpException;
 use KodiApp\Exception\HttpInternalErrorException;
 use KodiApp\Exception\HttpNotFoundException;
+use KodiApp\Response\ErrorResponse;
 use KodiApp\Router\RouterInterface;
 use KodiApp\Security\Security;
 use KodiApp\Session\SessionStorage;
@@ -75,17 +76,17 @@ class Application
         $this->contentProviders = [];
         $this->callableErrorHandler = function (HttpException $e) {
             if($e instanceof HttpNotFoundException) {
-                return "HTTP 404: [".$_SERVER['REQUEST_METHOD']."] ".$_SERVER['REQUEST_URI'];
+                return new ErrorResponse(404);
             }
             elseif ($e instanceof HttpInternalErrorException) {
                 $result = "";
                 foreach (debug_backtrace() as $line) {
                     $result .= $line."\n";
                 }
-                return "HTTP 500: \n".$result;
+                return new ErrorResponse(500,$result);
             }
             elseif ($e instanceof HttpAccessDeniedException) {
-                return "HTTP 403: [".$_SERVER['REQUEST_METHOD']."] ".$_SERVER['REQUEST_URI'];
+                return new ErrorResponse(403);
             }
             else {
                 return "HTTP: Undefined error";
@@ -147,7 +148,7 @@ class Application
             print $this->{$this->callableErrorHandler}($e);
         } catch (\Exception $e) {
             print "Unhandled exception!\n";
-            if($this->getEnvironment() == Application::ENV_DEVELOPMENT ) print $e->getMessage();
+            if(Application::isDevelopmentEnv()) print $e->getMessage();
         }
 
     }
@@ -194,6 +195,13 @@ class Application
     public function getEnvironment()
     {
         return $this->environment;
+    }
+
+    /**
+     * @return bool
+     */
+    public static function isDevelopmentEnv() {
+        return Application::getInstance()->getEnvironment()["type"] == Application::ENV_DEVELOPMENT;
     }
 
     /**

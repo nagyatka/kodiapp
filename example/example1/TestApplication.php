@@ -31,6 +31,12 @@ class TestApplication implements \KodiApp\ApplicationConfiguration
               "url"       =>  "/foo/bar/1222",
               "handler"   =>  "FooController::methodName"
             ],
+            [
+                "method"    =>  "GET",
+                "url"       =>  "/news/{news_id}",
+                "handler"   =>  "NewsController::renderNews"
+            ],
+
         ]);
         $application->setRouter(new \KodiApp\Router\SimpleRouter());
 

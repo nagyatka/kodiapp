@@ -9,44 +9,23 @@
 namespace KodiApp\Response;
 
 
-class JsonResponse
-{
+use KodiApp\Application;
 
-    private $values;
+class JsonResponse extends Response
+{
 
     /**
      * JsonResponse constructor.
-     * @param $values
+     * @param array $values
+     * @param int $status
      */
-    public function __construct($values)
+    public function __construct(array $values, $status = 200)
     {
-        $this->values = $values;
+        parent::__construct(
+            json_encode($values, JSON_NUMERIC_CHECK),
+            $status,
+            ['Content-type: application/json']
+        );
     }
-
-    /**
-     * The __toString method allows a class to decide how it will react when it is converted to a string.
-     *
-     * @return string
-     * @link http://php.net/manual/en/language.oop5.magic.php#language.oop5.magic.tostring
-     */
-    function __toString()
-    {
-        try {
-            $logger = Application::getInstance()->getLogger();
-            $environment = Application::getInstance()->getEnvironment();
-
-            header('Content-type: application/json');
-            if ($environment == Application::ENV_DEVELOPMENT) {
-                $t = number_format(microtime(1) - Application::getInstance()->getDebugStartTime(), 3, '.', ' ')." sec";
-                $m = number_format(memory_get_peak_usage()/1024/1024, 2, '.', ' ')." MB";
-                if (is_object($this->values)) $this->values["debug_execution_time"] = $t;
-                $logger->addDebug("Exection time and memory usage", array($t, $m));
-            }
-            return json_encode($this->values, JSON_NUMERIC_CHECK);
-        } catch (\Exception $e) {
-            return Application::getInstance()->getEnvironment() == Application::ENV_DEVELOPMENT ? $e->getMessage() : "";
-        }
-    }
-
 
 }
