@@ -14,7 +14,7 @@
     ],
     "autoload": {
         "psr-0": {
-            "KodiApp": "src/kodiapp"
+            "KodiApp": "src/"
         }
     },
     "require": {
