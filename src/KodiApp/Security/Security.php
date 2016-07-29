@@ -221,14 +221,14 @@ class Security
      * @return bool
      */
     public function checkPermissions($uri) {
-        foreach ($this->permissions as $permission) {
-            $match = preg_match($permission["path"],$uri);
+        foreach ($this->permissions as $permissionPath => $permissionRoles) {
+            $match = preg_match($permissionPath,$uri);
             if ($match == 1) {
                 $user = $this->getUser();
                 if($user == null) {
                     return false;
                 }
-                if(in_array($permission["role"],$user->getRoles())) {
+                if(in_array($permissionRoles,$user->getRoles())) {
                     return true;
                 } else {
                     return false;
