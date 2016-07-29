@@ -56,4 +56,10 @@ interface UserInterface
      * @return array
      */
     public function getRoles();
+
+    /**
+     * @param $role_id
+     * @return bool
+     */
+    public function hasRole($role_id);
 }

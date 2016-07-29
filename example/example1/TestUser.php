@@ -43,4 +43,9 @@ class TestUser implements \KodiApp\Security\UserInterface
     {
         // TODO: Implement getRoles() method.
     }
+
+    public function hasRole($role_id)
+    {
+        // TODO: Implement hasRole() method.
+    }
 }
