@@ -222,8 +222,8 @@ class Security
      */
     public function checkPermissions($uri) {
         foreach ($this->permissions as $permission) {
-            $pos = strpos($uri,$permission["path"]);
-            if ($pos != false) {
+            $match = preg_match($permission["path"],$uri);
+            if ($match == 1) {
                 $user = $this->getUser();
                 if($user == null) {
                     return false;
