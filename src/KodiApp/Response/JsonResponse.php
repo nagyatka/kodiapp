@@ -17,14 +17,17 @@ class JsonResponse extends Response
     /**
      * JsonResponse constructor.
      * @param array $values
+     * @param int $options [optional]
      * @param int $status
      */
-    public function __construct(array $values, $status = 200)
+    public function __construct(array $values,$options = JSON_NUMERIC_CHECK, $status = 200)
     {
         parent::__construct(
-            json_encode($values, JSON_NUMERIC_CHECK),
+            json_encode($values, $options),
             $status,
-            ['Content-type: application/json']
+            [
+                'Content-type: application/json',
+            ]
         );
     }
 
