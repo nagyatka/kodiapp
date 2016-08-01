@@ -268,4 +268,9 @@ class Application
         header("Location:$redirect");
     }
 
+    public function redirect($uri) {
+        $redirect = ($_SERVER['HTTPS'] != "on" ? "http" : "https")."://".$_SERVER['HTTP_HOST'].$uri;
+        header("Location:$redirect");
+    }
+
 }

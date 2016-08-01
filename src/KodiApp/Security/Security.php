@@ -222,17 +222,27 @@ class Security
      */
     public function checkPermissions($uri) {
         foreach ($this->permissions as $permissionPath => $permissionRoles) {
+            if($permissionPath[0] !== "/") {
+                $permissionPath = "/".$permissionPath;
+            }
+            if(substr($permissionPath,-1) !== "/") {
+                $permissionPath = $permissionPath."/";
+            }
             $match = preg_match($permissionPath,$uri);
             if ($match == 1) {
+                if(in_array(Role::ROLE_ANONYMOUS,$permissionRoles)) {
+                    return true;
+                }
                 $user = $this->getUser();
                 if($user == null) {
                     return false;
                 }
-                if(in_array($permissionRoles,$user->getRoles())) {
-                    return true;
-                } else {
-                    return false;
+                foreach ($permissionRoles as $permissionRole) {
+                    if(in_array($permissionRole,$user->getRoles())) {
+                        return true;
+                    }
                 }
+                return false;
             }
         }
         return true;
