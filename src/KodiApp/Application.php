@@ -14,6 +14,8 @@ use KodiApp\Exception\HttpAccessDeniedException;
 use KodiApp\Exception\HttpException;
 use KodiApp\Exception\HttpInternalErrorException;
 use KodiApp\Exception\HttpNotFoundException;
+use KodiApp\Heartbeat\Heartbeat;
+use KodiApp\Heartbeat\HeartbeatListener;
 use KodiApp\Response\ErrorResponse;
 use KodiApp\Router\RouterInterface;
 use KodiApp\Security\Security;
@@ -188,6 +190,17 @@ class Application
      */
     public function getTwig() {
         return $this->pimple["twig"];
+    }
+
+    /**
+     * @return Heartbeat
+     */
+    public function getHeartbeat() {
+        return $this->pimple["heartbeat"];
+    }
+
+    public function addHeartbeatListener(HeartbeatListener $listener) {
+        $this->getHeartbeat()->addListener($listener);
     }
 
     /**
