@@ -23,5 +23,8 @@
         "nagyatka/pandabase": "v0.9.6",
         "twig/twig": "~1.0",
         "swiftmailer/swiftmailer": "v5.4.3"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "5.4.8"
     }
 }
