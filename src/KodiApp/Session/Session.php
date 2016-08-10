@@ -26,6 +26,7 @@ use PandaBase\Record\SimpleRecord;
  *      - updated (datetime)
  *
  *
+ * @deprecated
  * @package KodiApp\Session
  */
 class Session extends SimpleRecord

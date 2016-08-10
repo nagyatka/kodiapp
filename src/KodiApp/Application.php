@@ -24,6 +24,17 @@ use KodiApp\Twig\Twig;
 use Monolog\Logger;
 use Pimple\Container;
 
+/**
+ * Class Application
+ *
+ * Applikáció osztály. Egy singleton mintát megvalósító osztály, amelyen keresztül hozzáférhető az alkalmazáshoz
+ * kapcsolódó összes beállítás és objektum, amiket globálisan el kell érni.
+ *
+ *
+ *
+ *
+ * @package KodiApp
+ */
 class Application
 {
 
@@ -31,11 +42,15 @@ class Application
     const ENV_PRODUCTION    = "prod";
 
     /**
+     * Singleton minta
+     *
      * @var Application
      */
     private static $instance = null;
 
     /**
+     * Pimple container.
+     *
      * @var Container
      */
     private $pimple;
@@ -165,6 +180,9 @@ class Application
     }
 
     /**
+     * Visszaadja, a Security objektumot. Ha nem létezik NULL-lal tér vissza.
+     *
+     * @deprecated
      * @return Security
      */
     public function getSecurity() {
@@ -172,6 +190,16 @@ class Application
     }
 
     /**
+     * Visszaadja, a Security objektumot. Ha nem létezik NULL-lal tér vissza.
+     *
+     * @return Security
+     */
+    public static function Security() {
+        return Application::getInstance()->getSecurity();
+    }
+
+    /**
+     * @deprecated
      * @return Logger
      */
     public function getLogger() {
@@ -179,6 +207,15 @@ class Application
     }
 
     /**
+     * Visszaadja a Logger objektumot.
+     * @return Logger
+     */
+    public static function Logger() {
+        return Application::getInstance()->getLogger();
+    }
+
+    /**
+     * @deprecated
      * @return SessionStorage
      */
     public function getSession() {
@@ -186,10 +223,25 @@ class Application
     }
 
     /**
+     * @return SessionStorage
+     */
+    public static function Session() {
+        return Application::getInstance()->getSession();
+    }
+
+    /**
+     * @deprecated
      * @return Twig
      */
     public function getTwig() {
         return $this->pimple["twig"];
+    }
+
+    /**
+     * @return Twig
+     */
+    public static function Twig() {
+        return Application::getInstance()->getTwig();
     }
 
     /**
@@ -204,11 +256,20 @@ class Application
     }
 
     /**
+     * Visszaadja a környezeti beállításokat.
+     * @deprecated
      * @return array
      */
     public function getEnvironment()
     {
         return $this->environment;
+    }
+
+    /**
+     * Visszaadja a környezeti beállításokat.
+     */
+    public static function Environment() {
+        return Application::getInstance()->getEnvironment();
     }
 
     /**
@@ -276,11 +337,17 @@ class Application
         }
     }
 
-    private function redirectHttps() {
+    /**
+     *
+     */
+    public function redirectHttps() {
         $redirect = "https://".$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
         header("Location:$redirect");
     }
 
+    /**
+     * @param $uri
+     */
     public function redirect($uri) {
         $redirect = ($_SERVER['HTTPS'] != "on" ? "http" : "https")."://".$_SERVER['HTTP_HOST'].$uri;
         header("Location:$redirect");

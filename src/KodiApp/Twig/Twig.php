@@ -38,20 +38,23 @@ class Twig
         $escaper = new \Twig_Extension_Escaper('html');
         $this->twig->addExtension($escaper);
 
-        //TODO: Twig függvények beállítása
-        /*
         // Jogosultság function
-        $is_granted = new \Twig_SimpleFunction('is_granted', function ($module_id) {
-            return $this->getUser()->checkModulePermission($module_id);
+        $is_granted = new \Twig_SimpleFunction('is_granted', function ($roles) {
+
+            if(is_array($roles)) {
+                foreach ($roles as $role) {
+                    if(Application::Security()->getUser()->hasRole($role)) {
+                        return true;
+                    }
+                }
+                return false;
+            } else {
+                return Application::Security()->getUser()->hasRole($roles);
+            }
         });
         $this->twig->addFunction($is_granted);
-        $is_member = new \Twig_SimpleFunction('isMemberOf', function ($group_id) {
-            return $this->getUser()->isMemberOf($group_id);
-        });
-        $this->twig->addFunction($is_member);
-        */
 
-        $this->useAjax =(!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') ? false : true;
+        $this->useAjax =(!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') ?  true : false;
     }
 
     /**
