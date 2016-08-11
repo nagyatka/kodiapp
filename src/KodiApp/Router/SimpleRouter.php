@@ -12,6 +12,7 @@ namespace KodiApp\Router;
 use FastRoute\Dispatcher\GroupCountBased;
 use FastRoute\RouteCollector;
 use function FastRoute\simpleDispatcher;
+use KodiApp\Application;
 use KodiApp\Exception\HttpNotFoundException;
 
 class SimpleRouter implements RouterInterface
@@ -41,6 +42,12 @@ class SimpleRouter implements RouterInterface
         $this->dispatcher = simpleDispatcher(function(RouteCollector $r) use ($routes) {
             foreach ($routes as $route) {
                 $r->addRoute($route["method"],$route["url"],$route["handler"]);
+            }
+
+            //Nyelvi url betöltése, ha van
+            $translator = Application::Translator();
+            if($translator != null && ($url = $translator->getCookieSetUrl()) != null) {
+                $r->addRoute($url["method"],$url["url"],$url["handler"]);
             }
         });
     }

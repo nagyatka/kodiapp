@@ -20,9 +20,11 @@ use KodiApp\Response\ErrorResponse;
 use KodiApp\Router\RouterInterface;
 use KodiApp\Security\Security;
 use KodiApp\Session\SessionStorage;
+use KodiApp\Translator\Translator;
 use KodiApp\Twig\Twig;
 use Monolog\Logger;
 use Pimple\Container;
+use Pimple\ServiceProviderInterface;
 
 /**
  * Class Application
@@ -135,13 +137,13 @@ class Application
             $uri = $_SERVER['REQUEST_URI'];
 
             //Jogosultság ellenőrzése, ha van definiálva security
-            $security = $this->getSecurity();
+            $security = self::Security();
             if ($security != null && !$security->checkPermissions($uri)) {
                 throw new HttpAccessDeniedException();
             }
 
             //Routeból lekérdezni, hogy mit kell futtatni
-            $router = $this->getRouter();
+            $router = self::Router();
             $routingResult = $router->findRoute($httpMethod, $uri);
             $controllerParts = explode("::", $routingResult["handler"]);
             $controllerName = $controllerParts[0];
@@ -172,11 +174,21 @@ class Application
     }
 
     /**
-     * Visszaadja a containert.
-     * @return Container
+     * Visszaadja a pimple container egy adott elemét.
+     * @param string $key
+     * @return mixed
      */
-    public function getPimple() {
-        return $this->pimple;
+    public function getPimpleElement($key) {
+        return $this->pimple[$key];
+    }
+
+    /**
+     * Szolgáltatás hozzáadása.
+     *
+     * @param ServiceProviderInterface $provider
+     */
+    public function register(ServiceProviderInterface $provider) {
+        $this->pimple->register($provider);
     }
 
     /**
@@ -310,6 +322,13 @@ class Application
     public function setRouter($router)
     {
         $this->router = $router;
+    }
+
+    /**
+     * @return Translator
+     */
+    public static function Translator() {
+        return Application::getPimpleElement("translator");
     }
 
     /**

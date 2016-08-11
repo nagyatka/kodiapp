@@ -54,8 +54,8 @@ class TestApplication implements \KodiApp\ApplicationConfiguration
         ]);
 
         // Adatbázis inicializálása
-        $pimple->register(new DatabaseProvider([
-            "name"      =>  "database_connection", //Panabasen belüli azonosító
+        $application->register(new DatabaseProvider([
+            "name"      =>  "database_connection", //Pandabasen belüli azonosító
             "driver"    =>  "mysql",
             "dbname"    =>  "db_database",
             "host"      =>  "localhost",
@@ -65,14 +65,14 @@ class TestApplication implements \KodiApp\ApplicationConfiguration
         ]));
 
         // Monolog inicializálása
-        $pimple->register(new MonologProvider([
+        $application->register(new MonologProvider([
             "name"      =>  'test_proj',
             "path"      =>  '/log/admin.log',
             "log_level" =>  Logger::INFO
         ]));
 
         // Security inicializálása
-        $pimple->register(new SecurityProvider([
+        $application->register(new SecurityProvider([
             "user_class" => TestUser::class,
             "permissions"=> [
                 "/myprofile"    =>  \KodiApp\Security\Role::ROLE_USER
@@ -80,12 +80,12 @@ class TestApplication implements \KodiApp\ApplicationConfiguration
         ]));
 
         // Session inicializálása
-        $pimple->register(new SessionProvider([
+        $application->register(new SessionProvider([
             "name"      => "mv_session", // A név megegyezik az adatbázis tábla nevével
             "lifetime"  => 7200
         ]));
 
-        $pimple->register(new TwigProvider([
+        $application->register(new TwigProvider([
             "path"                      =>  '/view',
             "page_frame_template_path"  =>  '/page_frame/frame.twig',
             "content_providers"         =>  [
@@ -93,9 +93,6 @@ class TestApplication implements \KodiApp\ApplicationConfiguration
                 new ServerContentProvider(),
             ]
         ]));
-
-        //$this->addContentProviders($application);
-
 
         $application->setErrorHandler(function($error) {
             if($error instanceof HttpNotFoundException) {
