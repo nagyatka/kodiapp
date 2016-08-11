@@ -48,6 +48,7 @@ class PdoSessionHandler implements \SessionHandlerInterface
             'db_id_col'   => 'sess_id',
             'db_data_col' => 'sess_data',
             'db_time_col' => 'sess_time',
+            'db_ip_col'   => 'sess_ip', // Módosított
         ), $dbOptions);
     }
     /**
@@ -194,13 +195,15 @@ class PdoSessionHandler implements \SessionHandlerInterface
         $dbDataCol = $this->dbOptions['db_data_col'];
         $dbIdCol   = $this->dbOptions['db_id_col'];
         $dbTimeCol = $this->dbOptions['db_time_col'];
-        $sql = "INSERT INTO $dbTable ($dbIdCol, $dbDataCol, $dbTimeCol) VALUES (:id, :data, :time)";
+        $dbIpCol   = $this->dbOptions['db_ipcol'];
+        $sql = "INSERT INTO $dbTable ($dbIdCol, $dbDataCol, $dbTimeCol, $dbIpCol) VALUES (:id, :data, :time, :ip)";
         //session data can contain non binary safe characters so we need to encode it
         $encoded = base64_encode($data);
         $stmt = $this->pdo->prepare($sql);
         $stmt->bindParam(':id', $id, \PDO::PARAM_STR);
         $stmt->bindParam(':data', $encoded, \PDO::PARAM_STR);
         $stmt->bindValue(':time', time(), \PDO::PARAM_INT);
+        $stmt->bindValue(':ip', PdoSessionHandler::getip(), \PDO::PARAM_STR);
         $stmt->execute();
         return true;
     }
