@@ -87,10 +87,14 @@ class TestApplication implements \KodiApp\ApplicationConfiguration
 
         $pimple->register(new TwigProvider([
             "path"                      =>  '/view',
-            "page_frame_template_path"  =>  '/page_frame/frame.twig'
+            "page_frame_template_path"  =>  '/page_frame/frame.twig',
+            "content_providers"         =>  [
+                // Szerver információk
+                new ServerContentProvider(),
+            ]
         ]));
 
-        $this->addContentProviders($application);
+        //$this->addContentProviders($application);
 
 
         $application->setErrorHandler(function($error) {
@@ -111,11 +115,5 @@ class TestApplication implements \KodiApp\ApplicationConfiguration
                 return "HTTP: Undefined error";
             }
         });
-    }
-
-    private function addContentProviders(\KodiApp\Application $application) {
-
-        //Szerver információk betöltése
-        $application->addPageContent(new ServerContentProvider());
     }
 }

@@ -257,7 +257,6 @@ class Application
 
     /**
      * Visszaadja a környezeti beállításokat.
-     * @deprecated
      * @return array
      */
     public function getEnvironment()
@@ -291,25 +290,18 @@ class Application
     }
 
     /**
-     * @param ContentProvider $contentProvider
-     */
-    public function addPageContent(ContentProvider $contentProvider) {
-        $this->contentProviders[] = $contentProvider;
-    }
-
-    /**
-     * @return ContentProvider[]
-     */
-    public function getPageContents() {
-        return $this->contentProviders;
-    }
-
-    /**
      * @return RouterInterface
      */
     public function getRouter()
     {
         return $this->router;
+    }
+
+    /**
+     * @return RouterInterface
+     */
+    public static function Router() {
+        return Application::getInstance()->getRouter();
     }
 
     /**
