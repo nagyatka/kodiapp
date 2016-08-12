@@ -7,7 +7,9 @@ use KodiApp\ServiceProvider\DatabaseProvider;
 use KodiApp\ServiceProvider\MonologProvider;
 use KodiApp\ServiceProvider\SecurityProvider;
 use KodiApp\ServiceProvider\SessionProvider;
+use KodiApp\ServiceProvider\TranslatorProvider;
 use KodiApp\ServiceProvider\TwigProvider;
+use KodiApp\Translator\Translator;
 use Monolog\Logger;
 
 /**
@@ -40,8 +42,6 @@ class TestApplication implements \KodiApp\ApplicationConfiguration
         ]);
         $application->setRouter(new \KodiApp\Router\SimpleRouter());
 
-        $pimple = $application->getPimple();
-
         $application->setEnvironment([
             "type"  => \KodiApp\Application::ENV_DEVELOPMENT,
             "timezone" => "Europe/Budapest",
@@ -69,6 +69,24 @@ class TestApplication implements \KodiApp\ApplicationConfiguration
             "name"      =>  'test_proj',
             "path"      =>  '/log/admin.log',
             "log_level" =>  Logger::INFO
+        ]));
+
+        $application->register( new TranslatorProvider([
+            "fallbackLocales" => [
+                "hu","en"
+            ],
+            "loader"   => [
+                "dev" => Translator::LOADER_ARRAY,
+                "prod"=> Translator::LOADER_SERIALIZED
+            ],
+            "resources" => [
+                "hu" => [
+                    "/asd/asd",
+                ]
+            ],
+            "strategy"  => Translator::STRATEGY_ONLY_COOKIE,
+            //Required at STRATEGY_ONLY_COOKIE
+            "cookie_set_url" => "/lang/set/{locale:[a-z]+}"
         ]));
 
         // Security inicializálása

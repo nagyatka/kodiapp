@@ -16,15 +16,92 @@ use Symfony\Component\Translation\Loader\YamlFileLoader;
 /**
  * Class Translator
  *
- * Az osztály feladata, hogy biztosítsa a több nyelvűsítést egy alkalmazás esetén. Ehhez a symfony/translation csomagot
- * használja, amelyet csak minimálisan módosítottunk.
+ * Az osztály feladata, hogy biztosítsa a több nyelvűsítést az alkalmazásban. Ehhez a symfony/translation csomagot
+ * használja, amelyet csak minimálisan egészítettünk ki.
  *
- *  TODO: doksit befejezni. stratégiák leírása mikor mi hogyan működik
+ * A működéshez a következő paramétereket kell KÖTELEZÓEN beállítani:
  *
- * Stratégiák:
- * Az osztály 3 különböző stratégiát tud követni az aktuális nyelv kiválasztásánál
+ *      - fallbackLocales:
+ *          A nyelvek listája, amik elérhetőek az alkalmazásban.
+ *          pl.:
+ *              "fallbackLocales" => [
+ *                  "hu","en"
+ *               ],
  *
- * ONLY_COOKIE:
+ *      - loader:
+ *          A nyelvi fájlok formátuma, milyen típusú betöltőt kell használni. Itt megkülönböztetünk develepoment
+ *          és production módot. Production módba érdemes a LOADER_SERIALIZED-t típust választani, ami szerializált
+ *          tömbökben tárolt nyelvi fájlokat tud betölteni.
+ *          pl.:
+ *              "loader"   => [
+ *                   "dev" => Translator::LOADER_ARRAY,
+ *                   "prod"=> Translator::LOADER_SERIALIZED
+ *              ],
+ *
+ *      - resources:
+ *          A nyelvi fájlok elérési útvonala. Itt a kulcs mezőben a nyelv nevét kell megadni (meg kell egyeznie a
+ *          a fallbackLocales-ban megadottal), majd utána fel kell sorolni a különböző útvonalakat.
+ *          pl.:
+ *              "resources" => [
+ *                   "hu" => [
+ *                      "/hu/login.yaml",
+ *                      "/hu/menu.yaml",
+ *                   ],
+ *                   ...
+ *              ]
+ *
+ *      - strategy:
+ *           3 különböző stratégiát tud követni az aktuális nyelv kiválasztásánál.
+ *
+ *          STRATEGY_ONLY_COOKIE: Csak cookie-t használ a nyelv eldöntésére.
+ *          STRATEGY_ONLY_URL: Csak az url-ben lévő locale alapján dönt a nyelvről. Ehhez a LanguageRouter
+ *              router-t kell választani, ami képes kezelni az url-ben érkező locale-okat.
+ *          STRATEGY_COOKIE_AND_URL: (ajánlott) Elsősorban az urlből próbálja betölteni, de ha az urlben nem érkezik, akkor
+ *              cookie-ból próbálja beállítani. Ehhez a LanguageRouter router-t kell választani, ami képes kezelni az
+ *              url-ben érkező locale-okat.
+ *
+ * STRATEGY_ONLY_COOKIE esetén KÖTELEZŐ paraméter:
+ *      - cookie_set_url:
+ *          Url, amelyen keresztül átváltható a cookieban lévő nyelv. Fontos, hogy GET HTTP metódussal és locale nevű
+ *          paraméterben várja a beállítandó nyelvet nyelvet.
+ *          pl.:
+ *              "cookie_set_url" => "/lang/set/{locale:[a-z]+}"
+ *
+ *
+ * Nyelvbeállítás alapelve:
+ *  Ha megpróbálunk beállítani (setLocale metódus) egy nyelvet, először ellenőrzi, hogy az létezik-e a beállított
+ * nyelvek között. Ha nem, megnézni, hogy van-e érvényes nyelv a HTTP_ACCEPT_LANGUAGE-ben. Ha ott sincs akkor az első
+ * érvényes nyelvet fogja választani (~default => fallbackLocales[0] ).
+ *
+ *
+ *
+ * Példa konfiguráció:
+ *
+ * $application->register( new TranslatorProvider([
+ *
+ *   "fallbackLocales" => [
+ *      "hu","en"
+ *   ],
+ *
+ *   "loader"   => [
+ *      "dev" => Translator::LOADER_ARRAY,
+ *      "prod"=> Translator::LOADER_SERIALIZED
+ *   ],
+ *
+ *   "resources" => [
+ *      "hu" => [
+ *          "/asd/asd",
+ *      ]
+ *   ],
+ *
+ *   "strategy"  => Translator::STRATEGY_ONLY_COOKIE,
+ *
+ *   //Required at STRATEGY_ONLY_COOKIE
+ *   "cookie_set_url" => "/lang/set/{locale:[a-z]+}"
+ *
+ * ]));
+ *
+ *
  *
  *
  *
@@ -42,7 +119,7 @@ class Translator
 
     const STRATEGY_ONLY_COOKIE      = "only_cookie";
     const STRATEGY_ONLY_URL         = "only_url";
-    const STRATEGY_COOKIE_AND_URL   = "cookie_url";
+    const STRATEGY_COOKIE_AND_URL   = "cookie_and_url";
 
     /**
      * @var \Symfony\Component\Translation\Translator
@@ -60,23 +137,6 @@ class Translator
      */
     public function __construct($configuration)
     {
-        $test = [
-
-            "fallbackLocales" => [
-                "hu","en"
-            ],
-            "loader"   => [
-                "dev" => Translator::LOADER_ARRAY,
-                "prod"=> Translator::LOADER_SERIALIZED
-            ],
-            "resources" => [
-                "hu" => "/asd/asd"
-            ],
-            "strategy"  => Translator::STRATEGY_ONLY_COOKIE,
-            //Required at STRATEGY_ONLY_COOKIE
-            "cookie_set_url" => "/lang/set/{locale:[a-z]+}"
-        ];
-
         // Konfiguráció betöltése
         $this->configuration = $configuration;
 
@@ -115,8 +175,10 @@ class Translator
             $format = $this->configuration["loader"]["prod"];
         }
         $this->translator->addLoader($format,$this->loaderFactory($format));
-        foreach ($this->configuration["resources"] as $locale => $resource) {
-            $this->translator->addResource($format,$resource,$locale);
+        foreach ($this->configuration["resources"] as $locale => $resources) {
+            foreach ($resources as $resource) {
+                $this->translator->addResource($format,$resource,$locale);
+            }
         }
     }
 
