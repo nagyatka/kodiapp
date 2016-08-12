@@ -141,14 +141,30 @@ class Twig
                 return Application::Security()->getUser()->hasRole($roles);
             }
         });
+        $this->twig->addFunction($is_granted);
 
         // Development-e a környezet
         $is_dev = new \Twig_SimpleFunction('is_dev', function(){
             return Application::isDevelopmentEnv();
         });
-
-        $this->twig->addFunction($is_granted);
         $this->twig->addFunction($is_dev);
+
+        $translator = Application::Translator();
+        if($translator != null) {
+
+            // Translate függvény biztosítása
+            $translate = new \Twig_SimpleFunction('translate',function($message,$params = null,$domain = null,$locale = null) use ($translator){
+                return $translator->trans($message,$params,$domain,$locale);
+            });
+            $this->twig->addFunction($translate);
+
+            // Aktuális locale biztosítása
+            $get_locale = new \Twig_SimpleFunction('get_locale',function() use ($translator){
+                return $translator->getLocale();
+            });
+            $this->twig->addFunction($get_locale);
+
+        }
 
         /*
          * A további twig függvényeket az átláthatóság szempontjából ide tegyük

@@ -102,7 +102,21 @@ use Symfony\Component\Translation\Loader\YamlFileLoader;
  * ]));
  *
  *
+ * Fordítás szerver oldalon:
  *
+ *      $translatedText = Application::Translator()->trans("text");
+ *
+ * Fordítás kliens oldalon (twig fájlban):
+ *
+ *      {{ translate("text") }}
+ *
+ * Nyelv lekérdezése szerver oldalon:
+ *
+ *      $locale = Application::Translator()->getLocale();
+ *
+ * Nyelv lekérdezése kliens oldalon:
+ *
+ *      {{ get_locale() }}
  *
  *
  * @package KodiApp\Translator
