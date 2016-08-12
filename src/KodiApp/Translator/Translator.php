@@ -398,4 +398,13 @@ class Translator
         return in_array($locale,$this->configuration["fallbackLocales"]);
     }
 
+    /**
+     * Az aktuálisan alkalmazott stratégia.
+     *
+     * @return string
+     */
+    public function getStrategy() {
+        return $this->configuration["strategy"];
+    }
+
 }

@@ -23,6 +23,11 @@ class SimpleRouter implements RouterInterface
     private $dispatcher;
 
     /**
+     * @var array
+     */
+    private $routes;
+
+    /**
      * Paraméterek betöltése.
      *
      * A tömb struktúra:
@@ -39,6 +44,7 @@ class SimpleRouter implements RouterInterface
      */
     public function setRoutes(array $routes)
     {
+        $this->routes = $routes;
         $this->dispatcher = simpleDispatcher(function(RouteCollector $r) use ($routes) {
             foreach ($routes as $route) {
                 $r->addRoute($route["method"],$route["url"],$route["handler"]);
@@ -50,6 +56,14 @@ class SimpleRouter implements RouterInterface
                 $r->addRoute($url["method"],$url["url"],$url["handler"]);
             }
         });
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getRoutes()
+    {
+        return $this->routes;
     }
 
     /**

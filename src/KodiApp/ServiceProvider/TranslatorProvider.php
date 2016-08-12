@@ -10,6 +10,7 @@ namespace KodiApp\ServiceProvider;
 
 
 use KodiApp\Translator\Translator;
+use KodiApp\Twig\Twig;
 use Pimple\Container;
 use Pimple\ServiceProviderInterface;
 
@@ -59,5 +60,28 @@ class TranslatorProvider implements ServiceProviderInterface
             $translator = new Translator($config);
             return $translator;
         };
+
+        /*
+         * Translate függvény és a getLocale függvény biztosítása a twighez
+         */
+        $pimple->extend('twig', function ($twig, $c) {
+            /** @var Twig $mytwig */
+            $mytwig = $twig;
+            /** @var Translator $translator */
+            $translator = $c["translator"];
+            // Translate függvény biztosítása
+            $translate = new \Twig_SimpleFunction('translate',function($message,$params = null,$domain = null,$locale = null) use ($translator){
+                return $translator->trans($message,$params,$domain,$locale);
+            });
+            $mytwig->getTwigEnvironment()->addFunction($translate);
+
+            // Aktuális locale biztosítása
+            $get_locale = new \Twig_SimpleFunction('get_locale',function() use ($translator){
+                return $translator->getLocale();
+            });
+            $mytwig->getTwigEnvironment()->addFunction($get_locale);
+
+            return $mytwig;
+        });
     }
 }

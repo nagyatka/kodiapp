@@ -127,48 +127,24 @@ class Twig
      *  Betölti a twigbe az általunk definiált függvényeket.
      */
     private function initializeBaseTwigFunction() {
-        // Jogosultság function
-        $is_granted = new \Twig_SimpleFunction('is_granted', function ($roles) {
-
-            if(is_array($roles)) {
-                foreach ($roles as $role) {
-                    if(Application::Security()->getUser()->hasRole($role)) {
-                        return true;
-                    }
-                }
-                return false;
-            } else {
-                return Application::Security()->getUser()->hasRole($roles);
-            }
-        });
-        $this->twig->addFunction($is_granted);
-
         // Development-e a környezet
         $is_dev = new \Twig_SimpleFunction('is_dev', function(){
             return Application::isDevelopmentEnv();
         });
         $this->twig->addFunction($is_dev);
 
-        $translator = Application::Translator();
-        if($translator != null) {
-
-            // Translate függvény biztosítása
-            $translate = new \Twig_SimpleFunction('translate',function($message,$params = null,$domain = null,$locale = null) use ($translator){
-                return $translator->trans($message,$params,$domain,$locale);
-            });
-            $this->twig->addFunction($translate);
-
-            // Aktuális locale biztosítása
-            $get_locale = new \Twig_SimpleFunction('get_locale',function() use ($translator){
-                return $translator->getLocale();
-            });
-            $this->twig->addFunction($get_locale);
-
-        }
-
         /*
-         * A további twig függvényeket az átláthatóság szempontjából ide tegyük
+         * A további twig függvényeket az átláthatóság szempontjából ide tegyük. Célszerű amúgy a Service providerekben
+         * extendelni a twiget.
          */
+    }
+
+    /**
+     * Visszaadja a belső twig környezetet.
+     * @return \Twig_Environment
+     */
+    public function getTwigEnvironment() {
+        return $this->twig;
     }
 
 

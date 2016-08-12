@@ -45,12 +45,18 @@ class LanguageRouter implements RouterInterface
     private $dispatcher;
 
     /**
+     * @var array
+     */
+    private $routes;
+
+    /**
      * Route-ok betöltése. A megfelelő tömb struktúra az osztály leírásában található.
      *
      * @param array $routes
      */
     public function setRoutes(array $routes)
     {
+        $this->routes = $routes;
         $this->dispatcher = simpleDispatcher(function(RouteCollector $r) use ($routes) {
             foreach ($routes as $route) {
                 // Ha kötelező, akkor csak locale-os url-t készítünk.
@@ -69,6 +75,15 @@ class LanguageRouter implements RouterInterface
             }
         });
     }
+
+    /**
+     * @inheritdoc
+     */
+    public function getRoutes()
+    {
+        return $this->routes;
+    }
+
 
     /**
      * Visszaadja a paraméterben megadott adatok alapján, a megfelelő handler-t és az ahhoz tartozó esetleges

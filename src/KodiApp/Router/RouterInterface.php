@@ -23,6 +23,13 @@ interface RouterInterface
     public function setRoutes(array $routes);
 
     /**
+     * Visszaadja az összes tárolt route-ot.
+     *
+     * @return array
+     */
+    public function getRoutes();
+
+    /**
      * Válasz tömbnek a következő elemekből kell állnia.
      *
      * $result = [
