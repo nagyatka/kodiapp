@@ -11,6 +11,7 @@ namespace KodiApp\Security;
 
 use KodiApp\Application;
 use Monolog\Logger;
+use PandaBase\Connection\ConnectionManager;
 
 class Security
 {
@@ -260,7 +261,9 @@ class Security
             return null;
         } else {
             $class_name = $this->userClassName;
-            return new $class_name($session->get("userid"));
+            /** @var UserInterface $user */
+            $user = new $class_name($session->get("userid"));
+            return $user;
         }
     }
 
@@ -278,6 +281,7 @@ class Security
             $match = preg_match($permissionPath,$uri);
             if ($match == 1) {
                 if(in_array(Role::ROLE_ANONYMOUS,$permissionRoles)) {
+                    ConnectionManager::getInstance()->registerAccessUser($this->getUser());
                     return true;
                 }
                 $user = $this->getUser();
@@ -286,6 +290,7 @@ class Security
                 }
                 foreach ($permissionRoles as $permissionRole) {
                     if(in_array($permissionRole,$user->getRoles())) {
+                        ConnectionManager::getInstance()->registerAccessUser($user);
                         return true;
                     }
                 }

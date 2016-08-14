@@ -7,6 +7,7 @@
  */
 
 namespace KodiApp\Security;
+use PandaBase\AccessManagement\AccessUserInterface;
 
 /**
  * Interface UserInterface
@@ -15,7 +16,7 @@ namespace KodiApp\Security;
  *
  * @package Model\Core\Security
  */
-interface UserInterface
+interface UserInterface extends AccessUserInterface
 {
 
     /**
