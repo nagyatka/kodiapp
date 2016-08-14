@@ -1,3 +1,5 @@
 vendor/*
 composer.lock
 .idea/*
+composer.phar
+run_tests.sh
