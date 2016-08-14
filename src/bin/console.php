@@ -6,7 +6,6 @@
  * Time: 16:35
  */
 
-
 try {
     $parsedInputs = parseConsoleArguments($argv);
 
@@ -14,7 +13,6 @@ try {
     echo "\nERROR\n=====\n";
     echo $e->getMessage()."\n";
 }
-
 
 /**
  * @param array $argv

@@ -77,7 +77,7 @@ class Security
         }
 
         if($this->isValidPassword($user)) {
-            $session = Application::getInstance()->getSession();
+            $session = Application::Session();
             //Session változók beállítása
             $session->set("loggedin",true);
             $session->set("updated",time());
@@ -193,14 +193,61 @@ class Security
     }
 
     /**
-     * Megvizsgálja, hogy a paraméterben megadott jelszó elég erős-e. Visszatérési értéke igaz, ha megfelelő a jelszó,
-     * amúgy hamis.
+     * Megvizsgálja, hogy a paraméterben megadott jelszó elég erős-e, megfelel-e a $settings paraméterben megadott
+     * feltételeknek. Visszatérési értéke igaz, ha megfelelő a jelszó, amúgy hamis.
+     *
+     * Használható feltételek:
+     *  - length: Minimum hány karakterből álljon
+     *  - uppers: Minimum hány nagybetűt tartalmazzon
+     *  - lowers: Minimum hány kisbetűt tartalmazzon
+     *  - digits: Minimum hány számjegyet tartalmazzon
+     *
+     * Ezeknek a paramétereknek megadása tetszőleges, de erősen ajánlott. Kihagyásuk esetén nem végez ellenőrzést.
+     *
+     * Példa:
+     *
+     *  $security->checkPasswordStrength($password,[
+     *      "length"    => 6,
+     *      "uppers"    => 1,
+     *      "lowers"    => 1,
+     *      "digits"    => 1
+     * ]);
+     *
      *
      * @param string $password
+     * @param array $settings
      * @return bool
      */
-    public function checkPasswordStrength($password) {
-        //TODO
+    public function checkPasswordStrength($password,$settings = []) {
+        // count how many lowercase, uppercase, and digits are in the password
+        $uc = 0; $lc = 0; $num = 0; $other = 0;
+        for ($i = 0, $j = strlen($password); $i < $j; $i++) {
+            $c = substr($password,$i,1);
+            if (preg_match('/^[[:upper:]]$/',$c)) {
+                $uc++;
+            } elseif (preg_match('/^[[:lower:]]$/',$c)) {
+                $lc++;
+            } elseif (preg_match('/^[[:digit:]]$/',$c)) {
+                $num++;
+            } else {
+                $other++;
+            }
+        }
+        $length = $uc + $lc + $num + $other;
+
+        if(isset($settings["length"]) && ($length < intval($settings["length"]))) {
+            return false;
+        }
+        if(isset($settings["uppers"]) && ($uc < intval($settings["uppers"]))) {
+            return false;
+        }
+        if(isset($settings["lowers"]) && ($lc < intval($settings["lowers"]))) {
+            return false;
+        }
+        if(isset($settings["digits"]) && ($num < intval($settings["digits"]))) {
+            return false;
+        }
+
         return true;
     }
 
@@ -208,7 +255,7 @@ class Security
      * @return UserInterface
      */
     public function getUser() {
-        $session = Application::getInstance()->getSession();
+        $session = Application::Session();
         if(!$session->get("loggedin")) {
             return null;
         } else {
