@@ -45,43 +45,5 @@ class SecurityProvider implements ServiceProviderInterface
             $logger = new Security($c["logger"],$config);
             return $logger;
         };
-
-        //Jogosultság kezelése twighez
-        $pimple->extend('twig', function ($twig, $c) {
-            /** @var Twig $mytwig */
-            $mytwig = $twig;
-            /** @var Security $security */
-            $security = $c["security"];
-
-            // Jogosultság function
-            $is_granted = new \Twig_SimpleFunction('is_granted', function ($roles) use($security) {
-
-                if(is_array($roles)) {
-                    foreach ($roles as $role) {
-                        if($security->getUser()->hasRole($role)) {
-                            return true;
-                        }
-                    }
-                    return false;
-                } else {
-                    return $security->getUser()->hasRole($roles);
-                }
-            });
-            $mytwig->getTwigEnvironment()->addFunction($is_granted);
-
-            //User_id
-            $get_user_id = new \Twig_SimpleFunction('get_user_id', function () use($security) {
-                return $security->getUser()->getUserId();
-            });
-            $mytwig->getTwigEnvironment()->addFunction($get_user_id);
-
-            //Username
-            $get_username = new \Twig_SimpleFunction('get_username', function () use($security) {
-                return $security->getUser()->getUsername();
-            });
-            $mytwig->getTwigEnvironment()->addFunction($get_username);
-
-            return $mytwig;
-        });
     }
 }

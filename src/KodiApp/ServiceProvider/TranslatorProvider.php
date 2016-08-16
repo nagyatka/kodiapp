@@ -70,7 +70,7 @@ class TranslatorProvider implements ServiceProviderInterface
             /** @var Translator $translator */
             $translator = $c["translator"];
             // Translate függvény biztosítása
-            $translate = new \Twig_SimpleFunction('translate',function($message,$params = null,$domain = null,$locale = null) use ($translator){
+            $translate = new \Twig_SimpleFunction('translate',function($message,$params = [],$domain = null,$locale = null) use ($translator){
                 return $translator->trans($message,$params,$domain,$locale);
             });
             $mytwig->getTwigEnvironment()->addFunction($translate);

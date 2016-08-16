@@ -10,6 +10,7 @@ namespace KodiApp\Security;
 
 
 use KodiApp\Application;
+use KodiApp\Twig\Twig;
 use Monolog\Logger;
 use PandaBase\Connection\ConnectionManager;
 
@@ -281,7 +282,8 @@ class Security
             $match = preg_match($permissionPath,$uri);
             if ($match == 1) {
                 if(in_array(Role::ROLE_ANONYMOUS,$permissionRoles)) {
-                    ConnectionManager::getInstance()->registerAccessUser($this->getUser());
+                    $user = $this->getUser();
+                    if($user != null) ConnectionManager::getInstance()->registerAccessUser($this->getUser());
                     return true;
                 }
                 $user = $this->getUser();
@@ -290,7 +292,8 @@ class Security
                 }
                 foreach ($permissionRoles as $permissionRole) {
                     if(in_array($permissionRole,$user->getRoles())) {
-                        ConnectionManager::getInstance()->registerAccessUser($user);
+                        $user = $this->getUser();
+                        if($user != null) ConnectionManager::getInstance()->registerAccessUser($this->getUser());
                         return true;
                     }
                 }
@@ -298,5 +301,43 @@ class Security
             }
         }
         return true;
+    }
+
+    /**
+     * @param Twig $twig
+     * @return Twig
+     */
+    public function setTwigFunctions($twig) {
+        $mytwig = $twig;
+        $security = $this;
+        // Jogosultság function
+        $is_granted = new \Twig_SimpleFunction('is_granted', function ($roles) use($security) {
+
+            if(is_array($roles)) {
+                foreach ($roles as $role) {
+                    if($security->getUser()->hasRole($role)) {
+                        return true;
+                    }
+                }
+                return false;
+            } else {
+                return $security->getUser()->hasRole($roles);
+            }
+        });
+        $mytwig->getTwigEnvironment()->addFunction($is_granted);
+
+        //User_id
+        $get_user_id = new \Twig_SimpleFunction('get_user_id', function () use($security) {
+            return $security->getUser()->getUserId();
+        });
+        $mytwig->getTwigEnvironment()->addFunction($get_user_id);
+
+        //Username
+        $get_username = new \Twig_SimpleFunction('get_username', function () use($security) {
+            return $security->getUser()->getUsername();
+        });
+        $mytwig->getTwigEnvironment()->addFunction($get_username);
+
+        return $mytwig;
     }
 }

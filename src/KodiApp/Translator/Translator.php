@@ -11,6 +11,7 @@ use KodiApp\Application;
 use KodiApp\Response\JsonResponse;
 use Symfony\Component\Translation\Loader\ArrayLoader;
 use Symfony\Component\Translation\Loader\JsonFileLoader;
+use Symfony\Component\Translation\Loader\PhpFileLoader;
 use Symfony\Component\Translation\Loader\YamlFileLoader;
 
 /**
@@ -205,7 +206,7 @@ class Translator
     private function loaderFactory($loader) {
         switch ($loader) {
             case Translator::LOADER_ARRAY:
-                return new ArrayLoader();
+                return new PhpFileLoader();
             case Translator::LOADER_JSON:
                 return new JsonFileLoader();
             case Translator::LOADER_SERIALIZED:

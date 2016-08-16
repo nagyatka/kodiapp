@@ -31,6 +31,8 @@ use KodiApp\Exception\HttpNotFoundException;
  *      ....
  * ]
  *
+ * Ha nincs beállítva a locale, automatikusan LanguageRouter::LOCALE_REQUIRED-nek veszi.
+ *
  * @package KodiApp\Router
  */
 class LanguageRouter implements RouterInterface

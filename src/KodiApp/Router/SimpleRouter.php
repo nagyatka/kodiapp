@@ -45,17 +45,12 @@ class SimpleRouter implements RouterInterface
     public function setRoutes(array $routes)
     {
         $this->routes = $routes;
-        $this->dispatcher = simpleDispatcher(function(RouteCollector $r) use ($routes) {
-            foreach ($routes as $route) {
-                $r->addRoute($route["method"],$route["url"],$route["handler"]);
-            }
 
-            //Nyelvi url betöltése, ha van
-            $translator = Application::Translator();
-            if($translator != null && ($url = $translator->getCookieSetUrl()) != null) {
-                $r->addRoute($url["method"],$url["url"],$url["handler"]);
-            }
-        });
+        //Hozzá kell még adni a nyelvi url-t, ha van.
+        $translator = Application::Translator();
+        if($translator != null && ($url = $translator->getCookieSetUrl()) != null) {
+            $this->routes["setLangUrl"] = $url;
+        }
     }
 
     /**
@@ -74,6 +69,13 @@ class SimpleRouter implements RouterInterface
      */
     public function findRoute($method, $uri)
     {
+        $routes = $this->getRoutes();
+        $this->dispatcher = simpleDispatcher(function(RouteCollector $r) use ($routes) {
+            foreach ($routes as $route) {
+                $r->addRoute($route["method"],$route["url"],$route["handler"]);
+            }
+        });
+
         // Strip query string (?foo=bar) and decode URI
         if (false !== $pos = strpos($uri, '?')) {
             $uri = substr($uri, 0, $pos);

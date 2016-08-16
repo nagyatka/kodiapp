@@ -10,6 +10,8 @@ namespace KodiApp\ServiceProvider;
 
 
 
+use KodiApp\Application;
+use KodiApp\Security\Security;
 use KodiApp\Twig\Twig;
 use Pimple\Container;
 use Pimple\ServiceProviderInterface;
@@ -43,5 +45,18 @@ class TwigProvider implements ServiceProviderInterface
         $pimple['twig'] = function ($c) use($configuration) {
             return new Twig($configuration);
         };
+
+        //Jogosultság kezelése twighez
+        $pimple->extend('twig', function ($twig, $c) {
+            /** @var Security $security */
+            $security = Application::Security();
+            if($security != null) {
+                $mytwig = $security->setTwigFunctions($twig);
+            } else {
+                $mytwig = $twig;
+            }
+
+            return $mytwig;
+        });
     }
 }

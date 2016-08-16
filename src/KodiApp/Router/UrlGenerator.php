@@ -22,7 +22,7 @@ class UrlGenerator
     {
     }
 
-    public function generate($url_name,$parameters) {
+    public function generate($url_name,$parameters = []) {
         $routes = Application::Router()->getRoutes();
         $translator = Application::Translator();
         if(!isset($routes[$url_name])) {
@@ -47,6 +47,13 @@ class UrlGenerator
             $resultUrl .= substr($url,$index,$firstPos-$index).(isset($parameters[$name])?$parameters[$name]:"");
             $index = $lastPos+1;
         };
+        if($index != strlen($url)) {
+            $resultUrl.= substr($url,$index);
+        }
+        // Ha nincs semmi, akkor nem volt paraméter, másoljuk az egész url-t.
+        if($resultUrl === "") {
+            $resultUrl = $url;
+        }
         return $resultUrl;
 
     }

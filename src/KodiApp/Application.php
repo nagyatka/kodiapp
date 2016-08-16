@@ -18,6 +18,7 @@ use KodiApp\Heartbeat\Heartbeat;
 use KodiApp\Heartbeat\HeartbeatListener;
 use KodiApp\Response\ErrorResponse;
 use KodiApp\Router\RouterInterface;
+use KodiApp\Router\UrlGenerator;
 use KodiApp\Security\Security;
 use KodiApp\Session\SessionStorage;
 use KodiApp\Translator\Translator;
@@ -168,7 +169,10 @@ class Application
             print $handler($e);
         } catch (\Exception $e) {
             print "Unhandled exception!\n";
-            if(Application::isDevelopmentEnv()) print $e->getMessage();
+            if(Application::isDevelopmentEnv()){
+                print $e->getMessage()."\n";
+                print str_replace("#","<br>#",$e->getTraceAsString());
+            }
         }
 
     }
@@ -328,7 +332,7 @@ class Application
      * @return Translator
      */
     public static function Translator() {
-        return Application::getPimpleElement("translator");
+        return Application::getInstance()->getPimpleElement("translator");
     }
 
     /**
@@ -346,6 +350,13 @@ class Application
         } else {
             return false;
         }
+    }
+
+    /**
+     * @return UrlGenerator
+     */
+    public static function UrlGenerator() {
+        return Application::getInstance()->getPimpleElement("url_generator");
     }
 
     /**
