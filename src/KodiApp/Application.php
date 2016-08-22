@@ -183,7 +183,11 @@ class Application
      * @return mixed
      */
     public function getPimpleElement($key) {
-        return $this->pimple[$key];
+        try {
+            return $this->pimple[$key];
+        } catch (\Exception $e) {
+            return null;
+        }
     }
 
     /**
@@ -371,6 +375,10 @@ class Application
      * @param $uri
      */
     public function redirect($uri) {
+        if(!isset($_SERVER['HTTPS'])) {
+            $redirect = "http://".$_SERVER['HTTP_HOST'].$uri;
+            header("Location:$redirect");
+        }
         $redirect = ($_SERVER['HTTPS'] != "on" ? "http" : "https")."://".$_SERVER['HTTP_HOST'].$uri;
         header("Location:$redirect");
     }

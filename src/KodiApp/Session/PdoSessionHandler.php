@@ -195,7 +195,7 @@ class PdoSessionHandler implements \SessionHandlerInterface
         $dbDataCol = $this->dbOptions['db_data_col'];
         $dbIdCol   = $this->dbOptions['db_id_col'];
         $dbTimeCol = $this->dbOptions['db_time_col'];
-        $dbIpCol   = $this->dbOptions['db_ipcol'];
+        $dbIpCol   = $this->dbOptions['db_ip_col'];
         $sql = "INSERT INTO $dbTable ($dbIdCol, $dbDataCol, $dbTimeCol, $dbIpCol) VALUES (:id, :data, :time, :ip)";
         //session data can contain non binary safe characters so we need to encode it
         $encoded = base64_encode($data);
