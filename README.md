@@ -12,8 +12,11 @@ $ composer require nagyatka/kodiapp
 **Magyar nyelvű dokumentáció**
 
 ### Alkalmazás indítása
-index.php
 ```php
+/*
+ * index.php
+ */
+
 define('PATH_BASE', dirname(__FILE__).'/..' );
 
 // Composer autoloader
@@ -53,21 +56,25 @@ class MyAppConfiguration implements ApplicationConfiguration
 
 ### Komponensek
 
-A különböző komponenseket az `ApplicationConfiguration` interfészt megvalóstó osztály `initializeApplication` metódusában
+**Komponensek regisztrációja**
+
+A különböző komponenseket az `ApplicationConfiguration` interfészt megvalósító osztály `initializeApplication` metódusában
 kell inicializálni.
+
+
 
 #### Routolás
 
 Az útvonalakat egy tömbben kell definiálni a következő struktúra szerint:
 ```php
-Struktúra:    
+//Struktúra:    
     [route_name] => [
         "method"    =>  [HTTP method],
         "url"       =>  [url],
         "handler"   =>  "[controller_class]::[controller_class_function]",
     ], ...
     
-Példa:
+//Példa:
     "home" => [
         "method"    =>  "GET",
         "url"       =>  "/",
@@ -137,7 +144,8 @@ class UserController
 ```
 A megadott url-ekben tetszőlegesen beállíthatóak paraméterek, amiket a metódus egy asszociatív tömbben kap meg. 
 Az url paramétereknél `:`-tal elválasztva megadható reguláris kifejezés is, amelynek teljesülnie kell, hogy meghívódjon
-a handlerben megadott metódus!
+a handlerben megadott metódus! A url-k beállításáról részletesebben [itt tudsz](https://github.com/nikic/FastRoute#defining-routes) 
+olvasni.
 
 
 

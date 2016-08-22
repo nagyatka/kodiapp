@@ -17,15 +17,12 @@ use Pimple\ServiceProviderInterface;
 
 class UrlGeneratorProvider implements ServiceProviderInterface
 {
-    private $configuration;
 
     /**
      * SessionProvider constructor.
-     * @param array $configuration
      */
-    public function __construct($configuration)
+    public function __construct()
     {
-        $this->configuration = $configuration;
     }
 
 
