@@ -233,24 +233,26 @@ class PdoSessionHandler implements \SessionHandlerInterface
     }
 
     private static function getip() {
-        if (self::validip($_SERVER["HTTP_CLIENT_IP"])) {
+        if (isset($_SERVER["HTTP_CLIENT_IP"]) && self::validip($_SERVER["HTTP_CLIENT_IP"])) {
             return $_SERVER["HTTP_CLIENT_IP"];
         }
-        foreach (explode(",",$_SERVER["HTTP_X_FORWARDED_FOR"]) as $ip) {
-            if (self::validip(trim($ip))) {
-                return $ip;
+        if(isset($_SERVER["HTTP_X_FORWARDED_FOR"])){
+            foreach (explode(",",$_SERVER["HTTP_X_FORWARDED_FOR"]) as $ip) {
+                if (self::validip(trim($ip))) {
+                    return $ip;
+                }
             }
         }
-        if (self::validip($_SERVER["HTTP_X_FORWARDED"])) {
+        if (isset($_SERVER["HTTP_X_FORWARDED"]) && self::validip($_SERVER["HTTP_X_FORWARDED"])) {
             return $_SERVER["HTTP_X_FORWARDED"];
-        } elseif (self::validip($_SERVER["HTTP_FORWARDED_FOR"])) {
+        } elseif (isset($_SERVER["HTTP_FORWARDED_FOR"]) && self::validip($_SERVER["HTTP_FORWARDED_FOR"])) {
             return $_SERVER["HTTP_FORWARDED_FOR"];
-        } elseif (self::validip($_SERVER["HTTP_FORWARDED"])) {
+        } elseif (isset($_SERVER["HTTP_FORWARDED"]) && self::validip($_SERVER["HTTP_FORWARDED"])) {
             return $_SERVER["HTTP_FORWARDED"];
-        } elseif (self::validip($_SERVER["HTTP_X_FORWARDED"])) {
+        } elseif (isset($_SERVER["HTTP_X_FORWARDED"]) && self::validip($_SERVER["HTTP_X_FORWARDED"])) {
             return $_SERVER["HTTP_X_FORWARDED"];
         } else {
-            return $_SERVER["REMOTE_ADDR"];
+            return isset($_SERVER["REMOTE_ADDR"]) ? $_SERVER["REMOTE_ADDR"] : "";
         }
     }
 }
