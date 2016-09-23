@@ -215,7 +215,7 @@ class Application
      * @return Security
      */
     public static function Security() {
-        return Application::getInstance()->getSecurity();
+        return Application::getInstance()->getPimpleElement("security");
     }
 
     /**
@@ -231,7 +231,7 @@ class Application
      * @return Logger
      */
     public static function Logger() {
-        return Application::getInstance()->getLogger();
+        return Application::getInstance()->getPimpleElement("logger");
     }
 
     /**
@@ -246,7 +246,7 @@ class Application
      * @return SessionStorage
      */
     public static function Session() {
-        return Application::getInstance()->getSession();
+        return Application::getInstance()->getPimpleElement("session");
     }
 
     /**
@@ -261,7 +261,7 @@ class Application
      * @return Twig
      */
     public static function Twig() {
-        return Application::getInstance()->getTwig();
+        return Application::getInstance()->getPimpleElement("twig");
     }
 
     /**
