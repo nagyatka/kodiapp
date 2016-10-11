@@ -28,6 +28,11 @@ class SimpleRouter implements RouterInterface
     private $routes;
 
     /**
+     * @var array
+     */
+    private $actualRoute;
+
+    /**
      * Paraméterek betöltése.
      *
      * A tömb struktúra:
@@ -89,6 +94,12 @@ class SimpleRouter implements RouterInterface
             case RouterInterface::METHOD_NOT_ALLOWED:
                 throw new HttpNotFoundException();
             case RouterInterface::FOUND:
+                foreach ($routes as $route) {
+                    if($route["handler"] == $routeInfo[1]) {
+                        $this->actualRoute = $route;
+                        break;
+                    }
+                }
                 return [
                     "handler"   =>  $routeInfo[1],
                     "params"    =>  $routeInfo[2]
@@ -96,5 +107,13 @@ class SimpleRouter implements RouterInterface
             default:
                 return [];
         }
+    }
+
+    /**
+     * @return array
+     */
+    public function getActualRoute()
+    {
+        return $this->actualRoute;
     }
 }

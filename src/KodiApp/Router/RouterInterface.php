@@ -43,4 +43,11 @@ interface RouterInterface
      */
     public function findRoute($method,$uri);
 
+    /**
+     * Visszaadja az aktuális url adatait, amiket megadott a felhasználó a route listában.
+     *
+     * @return array
+     */
+    public function getActualRoute();
+
 }

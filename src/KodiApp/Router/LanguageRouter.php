@@ -52,6 +52,11 @@ class LanguageRouter implements RouterInterface
     private $routes;
 
     /**
+     * @var array
+     */
+    private $actualRoute;
+
+    /**
      * Route-ok betöltése. A megfelelő tömb struktúra az osztály leírásában található.
      *
      * @param array $routes
@@ -120,6 +125,12 @@ class LanguageRouter implements RouterInterface
                     Application::Translator()->setLocale($params["locale"]);
                     unset($params["locale"]);
                 }
+                foreach ($this->routes as $route) {
+                    if($route["handler"] == $routeInfo[1]) {
+                        $this->actualRoute = $route;
+                        break;
+                    }
+                }
                 return [
                     "handler"   =>  $routeInfo[1],
                     "params"    =>  $params
@@ -127,5 +138,13 @@ class LanguageRouter implements RouterInterface
             default:
                 return [];
         }
+    }
+
+    /**
+     * @return array
+     */
+    public function getActualRoute()
+    {
+        return $this->actualRoute;
     }
 }

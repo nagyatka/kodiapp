@@ -11,6 +11,8 @@ namespace KodiApp\Twig;
 
 use KodiApp\Application;
 use KodiApp\ContentProvider\ContentProvider;
+use KodiApp\Exception\HttpInternalErrorException;
+use Twig_Extension_Debug;
 
 /**
  * Class Twig
@@ -61,7 +63,9 @@ class Twig
 
         // Twig inicializálása
         $loader = new \Twig_Loader_Filesystem($configuration["path"]);
-        $this->twig = new \Twig_Environment($loader);
+        $this->twig = new \Twig_Environment($loader,[
+            "debug" => Application::isDevelopmentEnv()
+        ]);
 
         // Ajax csekkolása
         $this->useAjax =(!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') ?  true : false;
@@ -69,6 +73,9 @@ class Twig
         // Escape
         $escaper = new \Twig_Extension_Escaper('html');
         $this->twig->addExtension($escaper);
+
+        if(Application::isDevelopmentEnv())
+            $this->twig->addExtension(new Twig_Extension_Debug());
 
         // Saját függvények definiálása
         $this->initializeBaseTwigFunction();
@@ -108,6 +115,7 @@ class Twig
      * @param $templateName
      * @param array $parameters
      * @param bool $forceRawTemplate
+     * @throws HttpInternalErrorException
      */
     public function render($templateName,$parameters = [],$forceRawTemplate = false) {
         // Különböző contentek betöltése
@@ -117,7 +125,19 @@ class Twig
         if($this->useAjax || $forceRawTemplate) {
             print $this->twig->render($templateName,$parameters);
         } else {
-            $pageFrameName = $this->configuration["page_frame_template_path"];
+            if(is_array($this->configuration["page_frame_template_path"])) {
+                $desiredFrame = Application::Router()->getActualRoute()["page_frame"];
+                if(array_key_exists($desiredFrame,$this->configuration["page_frame_template_path"])) {
+                    $pageFrameName = $this->configuration["page_frame_template_path"][$desiredFrame];
+                }
+                elseif(count($this->configuration["page_frame_template_path"]) > 0) {
+                    $pageFrameName = $this->configuration["page_frame_template_path"][0];
+                } else {
+                    throw new HttpInternalErrorException("Undefined pageframe template path in twig. Check configuration");
+                }
+            } else {
+                $pageFrameName = $this->configuration["page_frame_template_path"];
+            }
             $parameters["app"]["content_template_name"] = $templateName;
             print $this->twig->render($pageFrameName,$parameters);
         }
