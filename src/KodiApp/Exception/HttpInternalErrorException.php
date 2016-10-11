@@ -17,6 +17,7 @@ class HttpInternalErrorException extends HttpException
      */
     public function __construct()
     {
+        http_response_code(500);
         parent::__construct(500);
     }
 }

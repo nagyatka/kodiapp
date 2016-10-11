@@ -17,6 +17,7 @@ class HttpAccessDeniedException extends HttpException
      */
     public function __construct()
     {
+        http_response_code(403);
         parent::__construct(403);
     }
 }

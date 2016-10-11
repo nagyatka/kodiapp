@@ -18,6 +18,7 @@ class HttpNotFoundException extends HttpException
      */
     public function __construct()
     {
+        http_response_code(404);
         parent::__construct(404);
     }
 }
