@@ -115,9 +115,10 @@ class Twig
      * @param $templateName
      * @param array $parameters
      * @param bool $forceRawTemplate
+     * @param null $desiredFrameTemplate
      * @throws HttpInternalErrorException
      */
-    public function render($templateName,$parameters = [],$forceRawTemplate = false) {
+    public function render($templateName,$parameters = [],$forceRawTemplate = false,$desiredFrameTemplate = null) {
         // Különböző contentek betöltése
         foreach ($this->contentProviders as $contentProvider) {
             $parameters["app"][$contentProvider->getKey()] = $contentProvider->getValue();
@@ -126,14 +127,23 @@ class Twig
             print $this->twig->render($templateName,$parameters);
         } else {
             if(is_array($this->configuration["page_frame_template_path"])) {
-                $desiredFrame = Application::Router()->getActualRoute()["page_frame"];
-                if(array_key_exists($desiredFrame,$this->configuration["page_frame_template_path"])) {
-                    $pageFrameName = $this->configuration["page_frame_template_path"][$desiredFrame];
+                $templates = $this->configuration["page_frame_template_path"];
+                $actualRoute = Application::Router()->getActualRoute();
+                if($desiredFrameTemplate != null) {
+                    $desiredFrame = $desiredFrameTemplate;
                 }
-                elseif(count($this->configuration["page_frame_template_path"]) > 0) {
-                    $pageFrameName = $this->configuration["page_frame_template_path"][0];
-                } else {
-                    throw new HttpInternalErrorException("Undefined pageframe template path in twig. Check configuration");
+                elseif(isset($actualRoute["page_frame"])) {
+                    $desiredFrame = Application::Router()->getActualRoute()["page_frame"];
+                }
+                else {
+                    $desiredFrame = "default";
+                }
+
+                if(array_key_exists($desiredFrame,$templates)) {
+                    $pageFrameName = $templates[$desiredFrame];
+                }
+                else {
+                    throw new HttpInternalErrorException("Undefined page_frame template path in twig. Check configuration");
                 }
             } else {
                 $pageFrameName = $this->configuration["page_frame_template_path"];
