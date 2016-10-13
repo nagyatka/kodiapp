@@ -150,15 +150,20 @@ class Application
             $controllerName = $controllerParts[0];
             $controllerMethod = $controllerParts[1];
 
-            //Megfelelő controller betöltése
-            if (!$this->loadController($controllerName)) {
-                throw new HttpInternalErrorException($controllerName . " has been not found!");
-            }
+            if($controllerName === "Translator") {
+                $translator = Application::Translator();
+                $result = $translator->{$controllerMethod}($routingResult["params"]);
+            } else {
+                //Megfelelő controller betöltése
+                if (!$this->loadController($controllerName) && $controllerName!="Translator") {
+                    throw new HttpInternalErrorException($controllerName . " has been not found!");
+                }
 
-            //Futtatás
-            $controllerFullName = $this->environment["controller_namespace"] . $controllerName;
-            $controller = new $controllerFullName();
-            $result = $controller->{$controllerMethod}($routingResult["params"]);
+                //Futtatás
+                $controllerFullName = $this->environment["controller_namespace"] . $controllerName;
+                $controller = new $controllerFullName();
+                $result = $controller->{$controllerMethod}($routingResult["params"]);
+            }
 
             //Eredmény printelése
             print $result;

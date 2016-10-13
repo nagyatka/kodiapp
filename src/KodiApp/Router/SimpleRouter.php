@@ -75,6 +75,18 @@ class SimpleRouter implements RouterInterface
     public function findRoute($method, $uri)
     {
         $routes = $this->getRoutes();
+        //Hozzá kell még adni a nyelvi url-t, ha van.
+        $translator = Application::Translator();
+        if($translator != null) {
+            $langRoute = $translator->getCookieSetUrl();
+            if($langRoute != null) {
+                $routes["langSetRoute"] = [
+                    "method"    =>  $langRoute["method"],
+                    "url"       =>  $langRoute["url"],
+                    "handler"   =>  $langRoute["handler"]
+                ];
+            }
+        }
         $this->dispatcher = simpleDispatcher(function(RouteCollector $r) use ($routes) {
             foreach ($routes as $route) {
                 $r->addRoute($route["method"],$route["url"],$route["handler"]);

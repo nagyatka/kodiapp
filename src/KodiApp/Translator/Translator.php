@@ -266,7 +266,7 @@ class Translator
      * @return JsonResponse
      */
     final public function handleSetLocale($params) {
-        $this->translator->setLocale($params["locale"]);
+        $this->setLocale($params["locale"]);
         return new JsonResponse([
             "success"   =>  true
         ]);
@@ -336,7 +336,7 @@ class Translator
             return [
                 "method" => "GET",
                 "url" => $this->configuration["cookie_set_url"],
-                "handler" => Translator::class . "::handleSetLocale",
+                "handler" => "Translator::handleSetLocale",
             ];
         } else {
             return null;
@@ -374,16 +374,18 @@ class Translator
      */
     private function setLocaleToCookie($locale) {
 
+        unset($_COOKIE['locale']);
+        $localeExpiration = strtotime("+30 days");
         if($this->isSupportedLocale($locale)) {
             //Ha létezik ilyen támogatott locale, akkor beállítjuk
-            $_COOKIE["locale"] = $locale;
+            setcookie("locale",$locale,$localeExpiration,"/");
         } else {
             //Ha nem létezik megpróbáljuk beállítani a HTTP_ACCEPT_LANGUAGE változóból
             $httpLocale = substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2);
             if($this->isSupportedLocale($httpLocale)) {
-                $_COOKIE["locale"] = $httpLocale;
+                setcookie("locale",$httpLocale,$localeExpiration,"/");
             } else {
-                $_COOKIE["locale"] = $this->configuration["fallbackLocales"][0];
+                setcookie("locale",$this->configuration["fallbackLocales"][0],$localeExpiration,"/");
             }
         }
     }

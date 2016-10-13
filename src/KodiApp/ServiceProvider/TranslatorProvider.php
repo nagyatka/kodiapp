@@ -81,6 +81,12 @@ class TranslatorProvider implements ServiceProviderInterface
             });
             $mytwig->getTwigEnvironment()->addFunction($get_locale);
 
+            // Aktuális locale-ok biztosítása
+            $get_locales = new \Twig_SimpleFunction('get_locales',function() use ($translator){
+                return $translator->getFallbackLocales();
+            });
+            $mytwig->getTwigEnvironment()->addFunction($get_locales);
+
             return $mytwig;
         });
     }
