@@ -32,7 +32,7 @@ class UrlGenerator
         // Ha szükséges be kell rakni a nyelvet is a paraméterek közé
         if (
             $translator != null &&
-            !$translator->getStrategy()!= Translator::STRATEGY_ONLY_COOKIE &&
+            $translator->getStrategy()!= Translator::STRATEGY_ONLY_COOKIE &&
             !$routes[$url_name]["locale"] == LanguageRouter::LOCALE_NOT_ALLOWED
         ) {
             $parameters["locale"] = $translator->getLocale();
