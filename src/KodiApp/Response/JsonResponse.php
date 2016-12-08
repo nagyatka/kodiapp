@@ -26,16 +26,20 @@ class JsonResponse extends Response
          * If 'values' array contains InstanceRecord, it will be replaced with instance's getAll() method call result.
          */
         function recursiveCheck(&$array) {
-            foreach ($array as &$item) {
+            $r = array();
+            foreach ($array as $key => &$item) {
                 if(is_array($item)) {
-                    recursiveCheck($item);
+                    $r[$key] = recursiveCheck($item);
                 }
                 elseif ($item instanceof InstanceRecord) {
-                    $item = $item->getAll();
+                    $r[$key] = recursiveCheck($item->getAll());
+                } else {
+                    $r[$key] = &$item;
                 }
             }
+            return $r;
         }
-        recursiveCheck($values);
+        $values = recursiveCheck($values);
 
         parent::__construct(
             json_encode($values, $options),
