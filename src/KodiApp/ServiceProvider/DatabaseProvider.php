@@ -38,9 +38,22 @@ class DatabaseProvider implements ServiceProviderInterface
     public function register(Container $pimple)
     {
         $configuration = $this->databaseConfig;
-        ConnectionManager::getInstance()->initializeConnection($configuration);
-        if(strtolower($configuration["charset"]) === "utf8") {
-            ConnectionManager::getInstance()->getConnection($configuration["name"])->setNamesUTF8();
+        if($this->isAssociativeConfiguration($configuration)) {
+            ConnectionManager::getInstance()->initializeConnection($configuration);
+            if(strtolower($configuration["charset"]) === "utf8") {
+                if($configuration["driver"] == "mysql") {
+                    ConnectionManager::getInstance()->getConnection($configuration["name"])->setNamesUTF8();
+                }
+            }
+        } else {
+            ConnectionManager::getInstance()->initializeConnections($configuration);
+            foreach ($configuration as $config) {
+                if(strtolower($config["charset"]) === "utf8") {
+                    if($config["driver"] == "mysql") {
+                        ConnectionManager::getInstance()->getConnection($config["name"])->setNamesUTF8();
+                    }
+                }
+            }
         }
 
         /*
@@ -50,6 +63,12 @@ class DatabaseProvider implements ServiceProviderInterface
         $pimple['db'] = $pimple->factory(function ($c) {
             return ConnectionManager::getInstance();
         });
+    }
+
+    private function isAssociativeConfiguration(array $arr)
+    {
+        if (array() === $arr) return false;
+        return array_keys($arr) !== range(0, count($arr) - 1);
     }
 
 }
