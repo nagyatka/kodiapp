@@ -10,31 +10,42 @@ namespace KodiApp;
 
 
 use KodiApp\Cron\CronJob;
+use KodiApp\Cron\ScheduleItem;
+use KodiApp\Cron\Scheduler;
 
-class CronApplication extends Application
+class CronApplication
 {
     /**
-     * @var CronJob[]
+     * @var Application
      */
-    private $jobs = [];
+    private $application;
 
-    public function addJob(CronJob $cronJob) {
-        $this->jobs[] = $cronJob;
+    public function __construct()
+    {
+        $this->application = Application::getInstance();
     }
 
+
+    public function addJob(CronJob $cronJob)
+    {
+        return new ScheduleItem($cronJob);
+    }
+
+    /**
+     * @param ApplicationConfiguration $configuration
+     */
     public function run(ApplicationConfiguration $configuration)
     {
         try {
 
-            if(!$configuration) {
+            // Initialize environment
+            if (!$configuration) {
                 throw new \Exception("Missing configuration");
             }
+            $configuration->initializeApplication($this->application);
 
-            $configuration->initializeApplication($this);
-
-            foreach ($this->jobs as $job) {
-                $job->execute();
-            }
+            // Run scheduler
+            Scheduler::run();
 
         } catch (\Exception $exception) {
             print $exception->getMessage();

@@ -90,7 +90,7 @@ class Application
     /**
      * Application constructor.
      */
-    private final function __construct()
+    protected function __construct()
     {
         $this->pimple = new Container();
         $this->contentProviders = [];

@@ -10,5 +10,13 @@ namespace KodiApp\Cron;
 
 interface CronJob
 {
+    /**
+     * @return void
+     */
     public function execute();
+
+    /**
+     * @return string
+     */
+    public function name();
 }
