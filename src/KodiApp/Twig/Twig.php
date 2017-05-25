@@ -153,6 +153,43 @@ class Twig
         }
     }
 
+    public function renderToString($templateName,$parameters = [],$forceRawTemplate = false,$desiredFrameTemplate = null) {
+        $result = "";
+        // Különböző contentek betöltése
+        foreach ($this->contentProviders as $contentProvider) {
+            $parameters["app"][$contentProvider->getKey()] = $contentProvider->getValue();
+        }
+        if($this->useAjax || $forceRawTemplate) {
+            $result .= $this->twig->render($templateName,$parameters);
+        } else {
+            if(is_array($this->configuration["page_frame_template_path"])) {
+                $templates = $this->configuration["page_frame_template_path"];
+                $actualRoute = Application::Router()->getActualRoute();
+                if($desiredFrameTemplate != null) {
+                    $desiredFrame = $desiredFrameTemplate;
+                }
+                elseif(isset($actualRoute["page_frame"])) {
+                    $desiredFrame = Application::Router()->getActualRoute()["page_frame"];
+                }
+                else {
+                    $desiredFrame = "default";
+                }
+
+                if(array_key_exists($desiredFrame,$templates)) {
+                    $pageFrameName = $templates[$desiredFrame];
+                }
+                else {
+                    throw new HttpInternalErrorException("Undefined page_frame template path in twig. Check configuration");
+                }
+            } else {
+                $pageFrameName = $this->configuration["page_frame_template_path"];
+            }
+            $parameters["app"]["content_template_name"] = $templateName;
+            $result .= $this->twig->render($pageFrameName,$parameters);
+        }
+        return $result;
+    }
+
     /**
      *  Betölti a twigbe az általunk definiált függvényeket.
      */
