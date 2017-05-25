@@ -368,6 +368,10 @@ class Application
         return Application::getInstance()->getPimpleElement("url_generator");
     }
 
+    public static function Mailer() {
+        return Application::getInstance()->getPimpleElement("mailer");
+    }
+
     /**
      *
      */
