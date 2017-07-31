@@ -169,15 +169,16 @@ class Application
             print $result;
             return;
 
-        } catch (HttpException $e) {
-            $handler = $this->callableErrorHandler;
-            print $handler($e);
         } catch (\Exception $e) {
-            print "Unhandled exception!\n";
-            if(Application::isDevelopmentEnv()){
+            if(Application::Logger() != null) {
+                Application::Logger()->addError("Unhandled exception in application",["exception" => $e,"trace" => $e->getTraceAsString()]);
+            }
+            else {
                 print $e->getMessage()."\n";
                 print str_replace("#","<br>#",$e->getTraceAsString());
             }
+            $handler = $this->callableErrorHandler;
+            print $handler($e);
         }
 
     }
